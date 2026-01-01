@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE ARK - SYSTEM ONLINE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 1. 다크 사이버펑크 테마 설정 --- */
+        :root {
+            --bg-color: #050505;
+            --text-color: #c0c0c0;
+            --hero-color: #FFD700;    /* 라디언트: 골드 */
+            --villain-color: #bc13fe; /* 어비스: 네온 퍼플 */
+            --res-color: #ff003c;     /* 슬럼: 사이버 레드 */
+        }
+
+        /* --- 2. 움직이는 디지털 그리드 배경 (이미지 파일 불필요) --- */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+
+            /* 모눈종이 패턴 그리기 */
+            background-image: 
+                linear-gradient(rgba(50, 50, 50, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(50, 50, 50, 0.3) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, rgba(10, 10, 10, 0) 0%, #000 90%); /* 외곽을 어둡게 */
+            
+            background-size: 50px 50px, 50px 50px, 100% 100%;
+            
+            /* 배경이 천천히 흐르는 애니메이션 */
+            animation: moveGrid 15s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { background-position: 0 0, 0 0, 0 0; }
+            100% { background-position: 50px 50px, 50px 50px, 0 0; }
+        }
+
+        /* 화면 전체에 가로줄(스캔라인) 효과 */
+        .scanline {
+            width: 100%; height: 100vh; position: fixed; left: 0; top: 0; z-index: 999;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px; pointer-events: none;
+        }
+
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 3px; margin: 0; }
+        
+        /* --- 3. 히어로 섹션 (타이틀) --- */
+        .hero-section {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            position: relative;
+        }
+
+        /* 글리치 타이틀 효과 */
+        .glitch-title {
+            font-size: 4rem; font-weight: 900; color: white; position: relative;
+            text-shadow: 2px 2px var(--res-color), -2px -2px var(--villain-color);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+        @media (max-width: 768px) { .glitch-title { font-size: 2.5rem; } }
+
+        @keyframes glitch-anim {
+            0% { clip-path: inset(30% 0 10% 0); transform: skew(0.5deg); }
+            20% { clip-path: inset(10% 0 60% 0); transform: skew(-1deg); }
+            40% { clip-path: inset(50% 0 20% 0); transform: skew(0.2deg); }
+            60% { clip-path: inset(10% 0 80% 0); transform: skew(0.5deg); }
+            80% { clip-path: inset(40% 0 10% 0); transform: skew(-0.2deg); }
+            100% { clip-path: inset(70% 0 5% 0); transform: skew(1deg); }
+        }
+
+        .subtitle { color: #fff; margin-top: 20px; font-size: 1.2rem; opacity: 0.8; letter-spacing: 1px; }
+        .system-msg { color: #555; font-size: 0.8rem; margin-top: 10px; font-family: 'Orbitron'; }
+        
+        .scroll-down {
+            margin-top: 60px; font-size: 0.9rem; color: #fff; border: 1px solid #555; padding: 10px 25px; border-radius: 30px;
+            cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.5);
+        }
+        .scroll-down:hover { background: #fff; color: #000; box-shadow: 0 0 15px #fff; border-color: #fff; }
+
+        /* --- 4. 세력 소개 카드 --- */
+        .section { padding: 100px 10%; position: relative; border-bottom: 1px solid #222; backdrop-filter: blur(2px); }
+        .section-title { font-size: 2rem; margin-bottom: 50px; border-left: 4px solid #fff; padding-left: 15px; color: #fff; }
+
+        .factions { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .faction-card {
+            background: rgba(15, 15, 15, 0.9); padding: 40px; border: 1px solid #333; position: relative; overflow: hidden; transition: 0.4s;
+        }
+        .faction-card h3 { font-size: 1.5rem; margin-bottom: 15px; }
+        .faction-card p { color: #888; font-size: 0.95rem; line-height: 1.7; word-break: keep-all; }
+        
+        /* 호버 시 네온 효과 */
+        .f-hero:hover { border-color: var(--hero-color); box-shadow: 0 0 25px rgba(255, 215, 0, 0.15); transform: translateY(-5px); }
+        .f-hero h3 { color: var(--hero-color); }
+        
+        .f-villain:hover { border-color: var(--villain-color); box-shadow: 0 0 25px rgba(188, 19, 254, 0.15); transform: translateY(-5px); }
+        .f-villain h3 { color: var(--villain-color); }
+
+        .f-res:hover { border-color: var(--res-color); box-shadow: 0 0 25px rgba(255, 0, 60, 0.15); transform: translateY(-5px); }
+        .f-res h3 { color: var(--res-color); }
+
+        /* --- 5. 캐릭터 그리드 --- */
+        .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+        .char-card {
+            background: #0f0f0f; border: 1px solid #333; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .char-card:hover { transform: translateY(-5px); border-color: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        
+        .char-img-area {
+            height: 250px; width: 100%; background-color: #1a1a1a; background-size: cover; background-position: center;
+            filter: grayscale(100%) contrast(1.2); transition: 0.5s; position: relative;
+        }
+        /* 호버 시 컬러로 변환 */
+        .char-card:hover .char-img-area { filter: grayscale(0%) contrast(1); }
+        
+        /* 세력별 띠지 */
+        .tag { position: absolute; top: 10px; right: 10px; padding: 4px 8px; font-size: 0.65rem; font-weight: bold; color: #000; text-transform: uppercase; z-index: 2; font-family: 'Orbitron'; }
+        .tag-hero { background: var(--hero-color); }
+        .tag-villain { background: var(--villain-color); color: #fff; }
+        .tag-res { background: var(--res-color); color: #fff; }
+
+        .char-info { padding: 15px; text-align: center; }
+        .char-name { font-family: 'Orbitron'; font-size: 1.1rem; color: #fff; margin-bottom: 5px; }
+        .char-rank { font-size: 0.8rem; color: #666; }
+
+        /* --- 6. 상세 정보 모달 --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #111; width: 90%; max-width: 550px; padding: 0; border: 1px solid #444; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.8); display: flex; flex-direction: column;
+            animation: modalPop 0.3s ease-out;
+        }
+        @keyframes modalPop { from {transform: scale(0.9); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+
+        .modal-header-bar {
+            padding: 12px 20px; background: #1a1a1a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;
+        }
+        .sys-text { font-family: 'Orbitron'; font-size: 0.75rem; color: #555; letter-spacing: 1px; }
+        
+        .modal-body { padding: 30px; display: flex; gap: 25px; flex-wrap: wrap; }
+        .modal-img-large { 
+            width: 100px; height: 100px; background: #333; background-size: cover; background-position: center; 
+            border: 1px solid #444; flex-shrink: 0; 
+        }
+        .modal-text { flex: 1; min-width: 200px; }
+        
+        .stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid #222; padding: 10px 0; font-size: 0.9rem; }
+        .stat-label { color: #666; font-size: 0.85rem; }
+        .stat-val { color: #eee; font-weight: bold; text-align: right; }
+        
+        .quote-box {
+            margin-top: 25px; padding: 15px; background: #080808; border-left: 2px solid #555;
+            font-style: italic; font-size: 0.95rem; color: #aaa; line-height: 1.5;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scanline"></div>
+
+    <div class="hero-section">
+        <h1 class="glitch-title" data-text="THE ARK">THE ARK</h1>
+        <p class="subtitle">PROJECT: MODERN FANTASY SYSTEM</p>
+        <p class="system-msg">SYSTEM STATUS: UNSTABLE // REBOOTING...</p>
+        <div class="scroll-down" onclick="window.scrollTo({top: window.innerHeight, behavior: 'smooth'})">ACCESS ARCHIVE</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">FACTION DATA</div>
+        <div class="factions">
+            <div class="faction-card f-hero">
+                <h3>RADIANT SPIRE</h3>
+                <p><strong>[히어로 연합]</strong><br>질서와 통제의 상징. 시민들에게는 정의의 수호자이나, 그 이면에는 무책임한 권력이 존재한다.</p>
+            </div>
+            <div class="faction-card f-villain">
+                <h3>ABYSS DISTRICT</h3>
+                <p><strong>[빌런 네트워크]</strong><br>경찰조차 진입할 수 없는 무법지대. 욕망과 쾌락, 불법이 판치는 어둠의 해방구.</p>
+            </div>
+            <div class="faction-card f-res">
+                <h3>INFERNAL SLUM</h3>
+                <p><strong>[레지스탕스]</strong><br>낙후된 외곽 지역. 체제에 반기를 든 혁명가들과 생존자들이 모인 마지막 저항군.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">CHARACTER DATABASE</div>
+        <div class="char-grid" id="charGrid"></div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-content" id="modalContent">
+            <div class="modal-header-bar">
+                <span class="sys-text">ACCESSING RESTRICTED FILE...</span>
+                <span class="sys-text" style="cursor:pointer; font-size:1.2rem; color:#fff;" onclick="document.getElementById('modalOverlay').style.display='none'">[X]</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-img-large" id="mImg"></div>
+                <div class="modal-text">
+                    <h2 id="mName" style="color:white; margin: 0 0 5px 0; font-family:'Orbitron'">NAME</h2>
+                    <p id="mRole" style="color:#777; margin: 0 0 20px 0; font-size: 0.85rem;">ROLE</p>
+                    
+                    <div class="stat-row"><span class="stat-label">GIFT</span><span class="stat-val" id="mGift">-</span></div>
+                    <div class="stat-row"><span class="stat-label">RANK</span><span class="stat-val" id="mRank">-</span></div>
+                    <div class="stat-row"><span class="stat-label">PERSONALITY</span><span class="stat-val" id="mPersonality">-</span></div>
+                    <div class="stat-row"><span class="stat-label">NOTE</span><span class="stat-val" id="mNote">-</span></div>
+                    
+                    <div class="quote-box" id="mQuote">"..."</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 캐릭터 데이터 리스트
+        // img 항목에는 실제 이미지 주소를 넣으면 됩니다.
+        const characters = [
+            { name: "아스트리드", faction: "hero", role: "프라임 (히어로 연합)", gift: "태양광 집약", rank: "현현", personality: "엄격/카리스마", note: "히어로 연합 최강자", quote: "\"나의 빛 아래 그림자는 허용되지 않는다.\"", img: "https://via.placeholder.com/300/FFD700/000?text=Astrid" },
+            { name: "셀레나", faction: "villain", role: "보스 (빌런 연합)", gift: "어둠 장막", rank: "현현", personality: "냉혹/지배욕", note: "어비스의 절대자", quote: "\"빛이 강할수록 어둠은 더 짙어지는 법.\"", img: "https://via.placeholder.com/300/9D00FF/fff?text=Selena" },
+            { name: "세라피나스", faction: "res", role: "지도자 (레지스탕스)", gift: "염동력", rank: "현현", personality: "신비/헌신", note: "과거 연합 마스터 출신", quote: "\"거짓된 정의를 부수겠다.\"", img: "https://via.placeholder.com/300/FF003C/fff?text=Serafinas" },
+            { name: "카스미", faction: "villain", role: "간부 (빌런 연합)", gift: "혈액 흡수", rank: "심화", personality: "잔혹/관능", note: "카타나 사용", quote: "\"피 냄새가... 향긋하네?\"", img: "https://via.placeholder.com/300/555/fff?text=Kasumi" },
+            { name: "노라", faction: "res", role: "엔지니어 (레지스탕스)", gift: "기계 직감", rank: "융화", personality: "장난/집요", note: "천재 엔지니어", quote: "\"이거 터지면 꽤 아플걸?\"", img: "https://via.placeholder.com/300/777/fff?text=Nora" },
+            { name: "실비아", faction: "hero", role: "가디언 (히어로 연합)", gift: "환영/매혹", rank: "공명", personality: "화려/계산적", note: "언론 플레이의 대가", quote: "\"카메라, 잘 찍고 있지?\"", img: "https://via.placeholder.com/300/ddd/000?text=Silvia" }
+        ];
+
+        const grid = document.getElementById('charGrid');
+        const overlay = document.getElementById('modalOverlay');
+
+        // 카드 생성 로직
+        characters.forEach((c, i) => {
+            const card = document.createElement('div');
+            card.className = 'char-card';
+            
+            // 팩션에 따른 띠지 색상 클래스 결정
+            let tagClass = 'tag-res';
+            if (c.faction === 'hero') tagClass = 'tag-hero';
+            else if (c.faction === 'villain') tagClass = 'tag-villain';
+            
+            card.innerHTML = `
+                <div class="tag ${tagClass}">${c.faction.toUpperCase()}</div>
+                <div class="char-img-area" style="background-image: url('${c.img}')"></div>
+                <div class="char-info">
+                    <div class="char-name">${c.name}</div>
+                    <div class="char-rank">${c.role}</div>
+                </div>
+            `;
+            // 클릭 시 모달 열기
+            card.onclick = () => openModal(i);
+            grid.appendChild(card);
+        });
+
+        // 모달 열기 함수
+        function openModal(i) {
+            const c = characters[i];
+            document.getElementById('mName').innerText = c.name;
+            document.getElementById('mRole').innerText = c.role;
+            document.getElementById('mGift').innerText = c.gift;
+            document.getElementById('mRank').innerText = c.rank;
+            document.getElementById('mPersonality').innerText = c.personality;
+            document.getElementById('mNote').innerText = c.note;
+            document.getElementById('mQuote').innerText = c.quote;
+            document.getElementById('mImg').style.backgroundImage = `url('${c.img}')`;
+            
+            // 모달 테두리와 포인트 컬러를 세력색으로 변경
+            const content = document.getElementById('modalContent');
+            let color = 'var(--res-color)';
+            if(c.faction === 'hero') color = 'var(--hero-color)';
+            else if(c.faction === 'villain') color = 'var(--villain-color)';
+
+            content.style.borderColor = color;
+            document.getElementById('mQuote').style.color = color;
+            document.getElementById('mQuote').style.borderColor = color;
+
+            overlay.style.display = 'flex';
+        }
+
+        // 모달 닫기 (배경 클릭)
+        function closeModal(e) {
+            if (e.target === overlay) overlay.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
