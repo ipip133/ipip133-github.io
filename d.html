@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRA CHRONICLES : The Divided Continent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Noto+Serif+KR:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 컬러 팔레트 */
+            --bg-void: #050404; 
+            --gold-light: #e8c47a;
+            --gold-dark: #8a6d3b;
+            --parchment-bg: #ece3ce;
+            --text-ink: #2c1b12; 
+            --text-crimson: #8b1010; 
+            --card-bg: rgba(12, 10, 10, 0.85); /* 다크 카드 반투명 배경 */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-void);
+            color: #ccc;
+            font-family: 'Noto Serif KR', serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, .eng-font { font-family: 'Cinzel', serif; }
+
+        /* =========================================
+           1. Hero: 다크 판타지의 밤 (황금빛 불티)
+           ========================================= */
+        #hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1a1410 0%, var(--bg-void) 80%);
+            overflow: hidden;
+        }
+
+        /* 🌑 양피지 섹션으로 넘어갈 때 부드러운 전환을 위한 그라데이션 (복구됨!) */
+        #hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 25vh;
+            background: linear-gradient(to top, var(--bg-void) 0%, transparent 100%);
+            z-index: 5;
+        }
+
+        /* 황금빛 불티(Ember) 애니메이션 */
+        .embers {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+        }
+        .embers::after {
+            content: "";
+            position: absolute;
+            top: 100vh; left: 0; width: 3px; height: 3px;
+            background: transparent;
+            box-shadow: 
+                200px -100px var(--gold-light), 400px -300px #d47e3b, 600px -500px var(--gold-light), 
+                800px -200px #d47e3b, 1000px -600px var(--gold-light), 1200px -150px #d47e3b, 
+                1400px -400px var(--gold-light), 1600px -50px #d47e3b, 1800px -700px var(--gold-light), 
+                100px -800px #d47e3b, 300px -900px var(--gold-light), 700px -850px #d47e3b;
+            animation: floatUp 40s linear infinite;
+            border-radius: 50%;
+            filter: blur(1px);
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(0); }
+            to { transform: translateY(-150vh); }
+        }
+
+        .title-wrapper {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .astra-title {
+            font-size: 8rem;
+            color: #ffffff;
+            letter-spacing: 20px;
+            text-shadow: 0 0 20px rgba(232, 196, 122, 0.5), 0 0 40px rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 8px;
+            color: var(--gold-light);
+            text-shadow: 0 0 10px rgba(232, 196, 122, 0.4);
+            opacity: 0.8;
+        }
+
+        /* =========================================
+           2. 메인 컨텐츠 래퍼: 대륙 배경 이미지 고정
+           ========================================= */
+        #main-content {
+            position: relative;
+            padding: 100px 20px 150px; /* 좌우 여백 복구 */
+            z-index: 10;
+            background-image: url('https://igx.kr/u/BQ/c/d');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* 패럴랙스 효과 */
+            background-repeat: no-repeat;
+        }
+        
+        /* 🌑 대륙 이미지 어둡게 누르기 + 상단 연결부 그라데이션 복구! (끊김 방지) */
+        #main-content::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, 
+                var(--bg-void) 0%, 
+                rgba(5, 4, 4, 0.85) 15%, 
+                rgba(0, 0, 0, 0.75) 100%
+            );
+            z-index: -1;
+        }
+
+        /* =========================================
+           3. 세계관 파트 (양피지 내부)
+           ========================================= */
+        .parchment {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: var(--parchment-bg);
+            background-image: url('https://www.transparenttextures.com/patterns/old-wall.png'); 
+            color: var(--text-ink);
+            padding: 80px 100px;
+            border-radius: 4px;
+            box-shadow: 0 40px 100px rgba(0,0,0,1), inset 0 0 80px rgba(138, 109, 59, 0.4);
+            position: relative;
+            border: 1px solid rgba(138, 109, 59, 0.5);
+            margin-bottom: 120px; /* 양피지 종료 후 카드와의 간격 */
+        }
+
+        .parchment::before, .parchment::after {
+            content: '';
+            position: absolute;
+            left: 5%; right: 5%;
+            height: 1px;
+            background: var(--gold-dark);
+            opacity: 0.6;
+        }
+        .parchment::before { top: 25px; }
+        .parchment::after { bottom: 25px; }
+
+        .section-title-dark {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 50px;
+            color: var(--text-ink);
+            display: inline-block;
+            left: 50%;
+            position: relative;
+            transform: translateX(-50%);
+        }
+        .section-title-dark::after {
+            content: ''; display: block; width: 50px; height: 3px;
+            background: var(--text-crimson); margin: 15px auto 0;
+        }
+
+        .world-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+
+        .world-item h3 {
+            font-size: 1.5rem;
+            color: var(--text-crimson);
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(138, 109, 59, 0.4);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .world-item p {
+            line-height: 1.8;
+            font-size: 1.05rem;
+            text-align: justify;
+        }
+
+        /* 양피지 엔딩: 대륙 지도 공간 */
+        .map-ending {
+            margin-top: 80px;
+            text-align: center;
+            border-top: 2px dashed rgba(138, 109, 59, 0.5);
+            padding-top: 40px;
+        }
+        .map-ending h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-dark);
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+        }
+        .map-ending-img {
+            width: 100%;
+            max-width: 800px;
+            height: 300px;
+            background: rgba(138, 109, 59, 0.1);
+            border: 1px solid rgba(138, 109, 59, 0.5);
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(138, 109, 59, 0.8);
+            font-style: italic;
+        }
+
+        /* =========================================
+           4. 캐릭터 & 장소 파트 (양피지 바깥, 다크 테마)
+           ========================================= */
+        .dark-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title-light {
+            text-align: center;
+            font-size: 3rem;
+            color: var(--gold-light);
+            margin-bottom: 60px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(232, 196, 122, 0.3);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+        }
+
+        /* 프리미엄 다크 캐릭터 카드 (블러 및 테두리 효과) */
+        .char-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px); /* 배경 이미지가 살짝 비치는 글래스 효과 */
+            border: 1px solid rgba(138, 109, 59, 0.3);
+            border-top: 3px solid var(--text-crimson); /* 붉은 포인트 라인 */
+            border-radius: 8px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .char-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold-light);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(138, 109, 59, 0.2);
+        }
+
+        .char-name { 
+            font-size: 2.2rem; 
+            color: var(--gold-light); 
+            margin-bottom: 5px; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+        .char-sub { color: #a59382; font-size: 0.95rem; margin-bottom: 20px; font-weight: 600; }
+
+        .char-stats { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .stat-badge {
+            border: 1px solid rgba(232, 196, 122, 0.4);
+            padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; 
+            color: #e0e0e0; background: rgba(0,0,0,0.5);
+        }
+        
+        .char-desc {
+            color: #ccc;
+            margin-top: 20px; 
+            border-left: 2px solid var(--gold-dark); 
+            padding-left: 15px;
+            font-style: italic;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* 프리미엄 다크 장소 카드 */
+        .loc-wrapper {
+            margin-top: 120px; /* 캐릭터 섹션과의 간격 */
+        }
+
+        .loc-card {
+            height: 280px;
+            border-radius: 8px;
+            border: 1px solid rgba(138, 109, 59, 0.5);
+            display: flex; align-items: flex-end; padding: 30px;
+            position: relative; overflow: hidden;
+            transition: all 0.4s ease; background-size: cover; background-position: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        /* 내부 검은색 그라데이션으로 텍스트 가독성 확보 */
+        .loc-imperium { background-image: linear-gradient(to bottom, transparent, rgba(5,4,4,0.95)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=800&auto=format&fit=crop'); }
+        .loc-demon { background-image: linear-gradient(to bottom, transparent, rgba(5,4,4,0.95)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop'); }
+        .loc-atlantis { background-image: linear-gradient(to bottom, transparent, rgba(5,4,4,0.95)), url('https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?q=80&w=800&auto=format&fit=crop'); }
+
+        .loc-card:hover { 
+            transform: scale(1.03); 
+            border-color: var(--gold-light);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 0 2px rgba(232, 196, 122, 0.3);
+        }
+
+        .loc-info h4 { 
+            font-size: 2rem; 
+            color: #ffffff; 
+            margin-bottom: 5px; 
+            text-shadow: 2px 2px 10px rgba(0,0,0,1); 
+        }
+        .loc-info p { 
+            color: #d0c5b4; 
+            font-size: 1rem; 
+            text-shadow: 1px 1px 5px rgba(0,0,0,1); 
+        }
+
+        /* 스크롤 등장 애니메이션 */
+        .fade-up { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .astra-title { font-size: 4rem; letter-spacing: 10px; }
+            .parchment { padding: 50px 20px; }
+            .world-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header id="hero">
+        <div class="embers"></div>
+        <div class="title-wrapper fade-up visible">
+            <h1 class="astra-title">ASTRA</h1>
+            <p class="hero-subtitle eng-font">THE DIVIDED CONTINENT</p>
+        </div>
+    </header>
+
+    <div id="main-content">
+        
+        <div class="parchment fade-up">
+            <section id="world">
+                <h2 class="section-title-dark">대륙의 기록</h2>
+                <div class="world-grid">
+                    <div class="world-item">
+                        <h3>👑 발티아 제국</h3>
+                        <p>아스트라 대륙 서쪽을 지배하는 거대한 제국. 300년 전 제1차 인마대전의 휴전 이후 평화를 유지하고 있으나, 내부는 황위 계승을 노리는 황녀들의 권력 다툼과 귀족들의 파벌 싸움으로 ꪻ아가고 있다. 공식적인 계급 차별과 이종족 배척 정책이 존재한다.</p>
+                    </div>
+                    <div class="world-item">
+                        <h3>💀 심연의 마경</h3>
+                        <p>대륙 동쪽, 마력이 뒤틀린 척박한 땅. 솔로몬의 72악마들이 각자의 영지를 다스리며 약육강식이 기본 원칙인 세계. 10년 전, 악신 바알과 계약한 제국의 제3황녀가 왕으로 등극하며 힘과 충성의 수직적 구조 아래 새로운 전란을 준비하고 있다.</p>
+                    </div>
+                    <div class="world-item">
+                        <h3>⚔️ 오블리비온</h3>
+                        <p>마경의 악마들과 영적인 거래를 맺어 이치를 비틀어버린 <strong>'타락자'</strong>들의 암약 조직. 제국의 사법권이 닿지 않는 회색지대와 대륙 전역의 음지에 점조직 형태로 은닉하며, 절망과 탐욕으로 물든 자들을 모아 맹약을 맺는다.</p>
+                    </div>
+                    <div class="world-item">
+                        <h3>🕊️ 천신교</h3>
+                        <p>천신 릴리를 따르는 거대한 교단. 제국 내에서 준국가적인 권한을 지니며 성직자 면세, 성역 인정, 독자적인 종교 재판권을 행사한다. 겉으로는 권선징악을 표방하며 성검 아스텔리온을 수호하지만, 내부에는 부정부패가 깊게 도사리고 있다.</p>
+                    </div>
+                </div>
+
+                <div class="map-ending fade-up">
+                    <h3>MAP OF ASTRA</h3>
+                    <div class="map-ending-img">
+                        [ 대륙 지도 이미지가 들어갈 공간입니다 ]
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="dark-section">
+            
+            <section id="characters" class="fade-up">
+                <h2 class="section-title-light">주요 인물</h2>
+                <div class="card-grid">
+                    <div class="char-card">
+                        <h3 class="char-name">세리아</h3>
+                        <p class="char-sub">발티아 제국 / S급 모험가</p>
+                        <div class="char-stats">
+                            <span class="stat-badge">마스터 완숙</span>
+                            <span class="stat-badge">검성</span>
+                        </div>
+                        <p class="char-desc">"무뚝뚝하고 냉정하지만, 속은 정이 깊다. 짧고 묵직한 언행이 특징."</p>
+                    </div>
+
+                    <div class="char-card">
+                        <h3 class="char-name">루시아</h3>
+                        <p class="char-sub">발티아 제국 / 제1황녀</p>
+                        <div class="char-stats">
+                            <span class="stat-badge">7써클 대마법사</span>
+                            <span class="stat-badge">백발+백안</span>
+                        </div>
+                        <p class="char-desc">"완벽주의, 효율적, 무자비함. 단호하고 논리적인 톤으로 상대를 압도한다."</p>
+                    </div>
+
+                    <div class="char-card">
+                        <h3 class="char-name">유리아</h3>
+                        <p class="char-sub">마경 / 제3황녀 (바알 계약)</p>
+                        <div class="char-stats">
+                            <span class="stat-badge">경지 불명</span>
+                            <span class="stat-badge">하늘색 머리+자안</span>
+                        </div>
+                        <p class="char-desc">"질투심이 많고 자존감이 낮으나, 현재 바알에게 육체의 주도권을 빼앗긴 상태."</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="locations" class="loc-wrapper fade-up">
+                <h2 class="section-title-light">주요 무대</h2>
+                <div class="card-grid">
+                    <div class="loc-card loc-imperium">
+                        <div class="loc-info">
+                            <h4>임페리움</h4>
+                            <p>발티아 제국의 심장, 거대한 수도.</p>
+                        </div>
+                    </div>
+
+                    <div class="loc-card loc-demon">
+                        <div class="loc-info">
+                            <h4>마경 영지</h4>
+                            <p>보라빛 밤하늘이 드리워진 약육강식의 땅.</p>
+                        </div>
+                    </div>
+
+                    <div class="loc-card loc-atlantis">
+                        <div class="loc-info">
+                            <h4>아틀란티스</h4>
+                            <p>칠흑 같은 바다 밑, 인어들의 고대 문명.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+        </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { 
+                        entry.target.classList.add('visible'); 
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
