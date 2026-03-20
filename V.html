@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRA CHRONICLES : The Divided Continent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <style>
+        :root {
+            --bg-void: #050404; --gold-light: #e8c47a; --gold-dark: #8a6d3b; --parchment-bg: #ece3ce;
+            --text-ink: #2c1b12; --text-crimson: #8b1010; --card-bg: rgba(12, 10, 10, 0.85); 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* 🔥 html의 overflow-x: hidden이 모바일 스크롤 인식을 방해하므로 body에만 적용 */
+        body {
+            background-color: var(--bg-void); color: #d4d4d4;
+            font-family: 'Pretendard Variable', Pretendard, sans-serif;
+            scroll-behavior: smooth; line-height: 1.6;
+            overflow-x: hidden; width: 100%;
+        }
+
+        body.modal-open { overflow: hidden; }
+
+        h1, h2, h3, h4, .eng-font { font-family: 'Cinzel', 'Noto Serif KR', serif; }
+
+        /* 브라우저 버그 방지용 고정 배경 레이어 */
+        .fixed-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://igx.kr/u/BQ/c/d');
+            background-size: cover; background-position: center;
+            z-index: -2; pointer-events: none;
+        }
+        .fixed-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, var(--bg-void) 0%, rgba(5, 4, 4, 0.85) 15%, rgba(0, 0, 0, 0.7) 100%);
+            z-index: -1; pointer-events: none;
+        }
+
+        /* 네비게이션 햄버거 메뉴 */
+        .menu-btn { position: fixed; top: 25px; right: 25px; width: 35px; height: 25px; cursor: pointer; z-index: 1000; display: flex; flex-direction: column; justify-content: space-between; }
+        .menu-btn span { display: block; width: 100%; height: 3px; background-color: var(--gold-light); border-radius: 3px; transition: all 0.4s ease; box-shadow: 0 0 5px rgba(0,0,0,0.8); }
+        .menu-btn.active span:nth-child(1) { transform: translateY(11px) rotate(45deg); background-color: #fff; }
+        .menu-btn.active span:nth-child(2) { opacity: 0; }
+        .menu-btn.active span:nth-child(3) { transform: translateY(-11px) rotate(-45deg); background-color: #fff; }
+
+        .mobile-menu { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(5, 4, 4, 0.98); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transform: translateY(-100%); transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1.0); }
+        .mobile-menu.active { transform: translateY(0); }
+        .mobile-menu ul { list-style: none; text-align: center; }
+        .mobile-menu li { margin: 25px 0; }
+        .mobile-menu a { text-decoration: none; color: var(--gold-light); font-family: 'Cinzel', serif; font-size: 2rem; letter-spacing: 5px; transition: color 0.3s ease; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .mobile-menu a:hover { color: #fff; }
+
+        /* 1. Hero */
+        #hero { position: relative; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle at center, #1a1410 0%, var(--bg-void) 80%); overflow: hidden; z-index: 5; }
+        #hero::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 25vh; background: linear-gradient(to top, rgba(5,4,4,1) 0%, transparent 100%); z-index: 5; pointer-events: none; }
+        .embers { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .embers::after { content: ""; position: absolute; top: 100vh; left: 0; width: 3px; height: 3px; background: transparent; box-shadow: 200px -100px var(--gold-light), 400px -300px #d47e3b, 600px -500px var(--gold-light), 800px -200px #d47e3b, 1000px -600px var(--gold-light), 1200px -150px #d47e3b, 1400px -400px var(--gold-light), 1600px -50px #d47e3b, 1800px -700px var(--gold-light), 100px -800px #d47e3b, 300px -900px var(--gold-light), 700px -850px #d47e3b; animation: floatUp 40s linear infinite; border-radius: 50%; filter: blur(1px); }
+        @keyframes floatUp { from { transform: translateY(0); } to { transform: translateY(-150vh); } }
+
+        .title-wrapper { position: relative; z-index: 10; text-align: center; }
+        .astra-title { font-size: 7rem; color: #ffffff; letter-spacing: 15px; text-shadow: 0 0 20px rgba(232, 196, 122, 0.5), 0 0 40px rgba(255, 255, 255, 0.2); margin-bottom: 15px; }
+        .hero-subtitle { font-size: 1.1rem; letter-spacing: 6px; color: var(--gold-light); text-shadow: 0 0 10px rgba(232, 196, 122, 0.4); opacity: 0.8; font-weight: 600; }
+
+        /* 2. 메인 컨텐츠 래퍼 */
+        #main-content { position: relative; padding: 80px 0 120px 0; z-index: 10; }
+
+        /* 3. 세계관 (양피지) */
+        .parchment { max-width: 1000px; margin: 0 auto; background-color: var(--parchment-bg); background-image: url('https://www.transparenttextures.com/patterns/old-wall.png'); color: var(--text-ink); padding: 60px 40px; border-radius: 4px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 50px rgba(138, 109, 59, 0.2); position: relative; border: 1px solid rgba(138, 109, 59, 0.5); margin-bottom: 100px; z-index: 20; }
+        .parchment::before, .parchment::after { content: ''; position: absolute; left: 5%; right: 5%; height: 1px; background: var(--gold-dark); opacity: 0.5; }
+        .parchment::before { top: 20px; } .parchment::after { bottom: 20px; }
+        .section-title-dark { text-align: center; font-size: 2.5rem; margin-bottom: 40px; color: var(--text-ink); display: inline-block; left: 50%; position: relative; transform: translateX(-50%); }
+        .section-title-dark::after { content: ''; display: block; width: 40px; height: 3px; background: var(--text-crimson); margin: 12px auto 0; }
+        .world-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .world-item h3 { font-size: 1.3rem; color: var(--text-crimson); margin-bottom: 10px; border-bottom: 1px solid rgba(138, 109, 59, 0.3); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .world-item p { font-size: 1rem; text-align: justify; color: #3d3024; word-break: keep-all; }
+        
+        .map-ending { margin-top: 60px; text-align: center; border-top: 1px dashed rgba(138, 109, 59, 0.4); padding-top: 30px; }
+        .map-ending h3 { font-family: 'Cinzel', serif; color: var(--gold-dark); margin-bottom: 15px; letter-spacing: 4px; font-size: 1.1rem; }
+        .map-ending-img { width: 100%; max-width: 800px; background: rgba(138, 109, 59, 0.1); border: 1px solid rgba(138, 109, 59, 0.4); margin: 0 auto; display: block; overflow: hidden; border-radius: 4px; }
+        .map-ending-img img { width: 100%; height: auto; display: block; filter: sepia(0.2) contrast(1.1); transition: transform 0.3s; }
+
+        /* 4. 캐릭터 & 장소 (다크 테마) */
+        .dark-section { position: relative; z-index: 20; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .section-title-light { text-align: center; font-size: 2.5rem; color: var(--gold-light); margin-bottom: 50px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(232, 196, 122, 0.3); }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+
+        .clickable-card { cursor: pointer; position: relative; }
+        .clickable-card::after { content: '🔍 클릭하여 보기'; position: absolute; bottom: 20px; right: 20px; font-size: 0.8rem; color: var(--gold-light); opacity: 0; transition: all 0.3s ease; background: rgba(0,0,0,0.8); padding: 6px 14px; border-radius: 20px; z-index: 10; font-weight: 600; border: 1px solid var(--gold-dark); }
+        .clickable-card:hover::after { opacity: 1; bottom: 30px; }
+
+        /* 캐릭터 카드 */
+        .char-card { background: var(--card-bg); backdrop-filter: blur(8px); border: 1px solid rgba(138, 109, 59, 0.3); border-top: 3px solid var(--text-crimson); border-radius: 8px; padding: 25px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .char-card:hover { transform: translateY(-5px); border-color: var(--gold-light); box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
+        .char-portrait { width: 100%; aspect-ratio: 3 / 4; height: auto; border-radius: 8px; border: 2px solid var(--gold-dark); margin-bottom: 15px; overflow: hidden; background: #111; box-shadow: 0 0 15px rgba(0,0,0,0.8); }
+        .char-portrait img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.4s; } 
+        .char-card:hover .char-portrait img { transform: scale(1.05); }
+
+        .char-name { font-size: 1.8rem; color: var(--gold-light); margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .char-sub { color: #a59382; font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; }
+        .char-stats { display: flex; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center; }
+        .stat-badge { border: 1px solid rgba(232, 196, 122, 0.4); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; color: #e0e0e0; background: rgba(0,0,0,0.5); }
+        
+        /* 장소 카드 */
+        .loc-wrapper { margin-top: 100px; }
+        .loc-card { background: var(--card-bg); backdrop-filter: blur(8px); border: 1px solid rgba(138, 109, 59, 0.3); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .loc-card:hover { transform: translateY(-5px); border-color: var(--gold-light); box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
+        .loc-img-box { width: 100%; aspect-ratio: 16 / 9; height: auto; overflow: hidden; border-bottom: 2px solid var(--gold-dark); }
+        .loc-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .loc-card:hover .loc-img-box img { transform: scale(1.05); }
+        .loc-text-box { padding: 20px 20px 30px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .loc-text-box p { font-size: 1.05rem; color: #d0c5b4; margin: 0; word-break: keep-all; line-height: 1.5; }
+        .loc-text-box strong { color: var(--gold-light); font-size: 1.5rem; font-family: 'Cinzel', 'Noto Serif KR', serif; display: inline-block; margin-bottom: 5px; letter-spacing: 1px; }
+
+        /* 모달 팝업 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-box { background: linear-gradient(145deg, #12100e, #050404); border: 1px solid var(--gold-dark); border-radius: 8px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; position: relative; transform: translateY(30px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(138, 109, 59, 0.15); }
+        .modal-overlay.active .modal-box { transform: translateY(0); }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: var(--gold-light); cursor: pointer; line-height: 1; z-index: 10; text-shadow: 0 0 10px #000; }
+        .modal-img-container { width: 100%; max-height: 450px; background: #000; border-bottom: 2px solid var(--gold-dark); text-align: center; }
+        .modal-img-container img { max-width: 100%; max-height: 450px; object-fit: contain; } 
+        .modal-content-area { padding: 30px; }
+        .modal-title { font-size: 2.2rem; color: var(--gold-light); margin-bottom: 5px; font-family: 'Cinzel', serif; }
+        .modal-sub { color: #a59382; font-size: 1rem; margin-bottom: 20px; border-bottom: 1px dashed rgba(138, 109, 59, 0.3); padding-bottom: 15px; }
+        .modal-desc { color: #ccc; line-height: 1.8; font-size: 1rem; word-break: keep-all; }
+        .modal-desc p { margin-bottom: 10px; }
+        .modal-desc b { color: var(--gold-light); }
+        
+        /* PC용 페이드 애니메이션 */
+        .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        /* 🔥 모바일 환경 완벽 수정 (증발 버그 100% 차단) 🔥 */
+        @media (max-width: 768px) {
+            .astra-title { font-size: 4.5rem; letter-spacing: 10px; }
+            .parchment { padding: 40px 20px; margin: 0 15px 80px 15px; }
+            .world-grid { grid-template-columns: 1fr; gap: 30px; }
+            
+            /* 모바일 카드 증발 방지: 1열 강제 및 블러 해제 */
+            .char-card, .loc-card { backdrop-filter: none; background: rgba(18, 15, 15, 0.95); }
+            .card-grid { grid-template-columns: 1fr; } 
+            
+            .modal-img-container { max-height: 350px; }
+            .modal-img-container img { max-height: 350px; }
+
+            /* 🚨 가장 중요한 핵심 해결책 🚨 
+               모바일 브라우저의 IntersectionObserver 버그로 인해 카드가 투명도 0인 상태로 영원히 멈추는 현상을 방지합니다. 
+               모바일에서는 애니메이션 없이 처음부터 무조건 보이게 강제합니다. */
+            .fade-up {
+                opacity: 1 !important; 
+                transform: none !important; 
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-btn" id="menu-btn"><span></span><span></span><span></span></div>
+    <nav class="mobile-menu" id="mobile-menu">
+        <ul>
+            <li><a href="#world" class="menu-link">세계관</a></li>
+            <li><a href="#characters" class="menu-link">주요 인물</a></li>
+            <li><a href="#locations" class="menu-link">주요 무대</a></li>
+        </ul>
+    </nav>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" id="modal-close">&times;</span>
+            <div class="modal-img-container"><img id="modal-img" src="" alt="상세 이미지"></div>
+            <div class="modal-content-area">
+                <h2 class="modal-title" id="modal-title">이름</h2>
+                <div class="modal-sub" id="modal-sub">소속 / 직업</div>
+                <div class="modal-desc" id="modal-desc"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed-bg"></div>
+    <div class="fixed-overlay"></div>
+
+    <header id="hero">
+        <div class="embers"></div>
+        <div class="title-wrapper fade-up visible">
+            <h1 class="astra-title">ASTRA</h1>
+            <p class="hero-subtitle eng-font">THE DIVIDED CONTINENT</p>
+        </div>
+    </header>
+
+    <div id="main-content">
+        <div class="parchment fade-up">
+            <section id="world">
+                <h2 class="section-title-dark">대륙의 기록</h2>
+                <div class="world-grid">
+                    <div class="world-item">
+                        <h3>👑 발티아 제국</h3>
+                        <p>300년 전 인마대전 이후 평화를 유지하고 있는 서대륙의 패자. 겉으로는 찬란하나 내부는 황위 계승을 둘러싼 권력 다툼과 차별로 곪아가고 있습니다.</p>
+                    </div>
+                    <div class="world-item">
+                        <h3>💀 심연의 마경</h3>
+                        <p>대륙 동쪽, 솔로몬의 72악마가 지배하는 약육강식의 땅. 악신 바알과 계약한 제국의 제3황녀가 왕으로 등극하며 새로운 전란을 준비하고 있습니다.</p>
+                    </div>
+                    <div class="world-item">
+                        <h3>⚔️ 오블리비온</h3>
+                        <p>악마와 거래해 이치를 비틀어버린 '타락자'들의 암약 조직. 대륙 전역의 음지에 점조직 형태로 은닉하며, 절망에 빠진 자들을 모아 세력을 키우고 있습니다.</p>
+                    </div>
+                    <div class="world-item">
+                        <h3>🕊️ 천신교</h3>
+                        <p>천신 릴리를 섬기며 막강한 권력을 지닌 거대 교단. 겉으로는 권선징악과 평화를 표방하지만, 그 이면에는 깊은 부정부패와 탐욕이 도사리고 있습니다.</p>
+                    </div>
+                </div>
+                
+                <div class="map-ending fade-up">
+                    <h3>MAP OF ASTRA</h3>
+                    <div class="map-ending-img">
+                        <img src="https://igx.kr/u/CQ/c/c" alt="아스트라 대륙 지도">
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="dark-section">
+            
+            <section id="characters" class="fade-up">
+                <h2 class="section-title-light">주요 인물</h2>
+                <div class="card-grid">
+                    <div class="char-card clickable-card fade-up" data-title="릴리" data-sub="천신교 / 천신" data-img="https://igx.kr/u/NR/c/H" data-desc="<p><b>경지:</b> 신격 (Deity)</p><p><b>성격:</b> 불명</p><p>아스트라 대륙을 굽어보는 빛과 질서의 화신이자 천신교의 절대적인 숭배 대상.</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/H" alt="릴리"></div>
+                        <h3 class="char-name">릴리</h3><p class="char-sub">천신교 / 천신</p>
+                        <div class="char-stats"><span class="stat-badge">초월자</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="바알" data-sub="마경 / 제1위 대악마" data-img="https://igx.kr/u/NR/c/g" data-desc="<p><b>경지:</b> 악신</p><p><b>성격:</b> 오만함, 파괴적</p><p>솔로몬의 72악마 중 정점. 제3황녀 유리아와 계약하여 육체를 지배하고 있다.</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/g" alt="바알"></div>
+                        <h3 class="char-name">바알</h3><p class="char-sub">마경 / 제1위 대악마</p>
+                        <div class="char-stats"><span class="stat-badge">악신</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="세리아" data-sub="발티아 / S급 모험가" data-img="https://igx.kr/u/NR/c/K" data-desc="<p><b>경지:</b> 마스터 완숙 (검성)</p><p><b>외형:</b> 흑발+적안</p><p><b>성격:</b> 무뚝뚝, 냉정, 정이 많음</p><p><b>말투:</b> 짧고 묵직함</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/K" alt="세리아"></div>
+                        <h3 class="char-name">세리아</h3><p class="char-sub">발티아 / S급 모험가</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">마스터 완숙</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="엘리나" data-sub="실바네스 / C급 모험가" data-img="https://igx.kr/u/NR/c/L" data-desc="<p><b>경지:</b> 익스퍼트 중급</p><p><b>외형:</b> 금발+녹안</p><p><b>성격:</b> 장난끼, 털털함</p><p><b>말투:</b> 반말 또는 반쯤 놀리는 존대</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/L" alt="엘리나"></div>
+                        <h3 class="char-name">엘리나</h3><p class="char-sub">실바네스 / C급 모험가</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">익스퍼트 중급</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="에밀리" data-sub="에스테 / 상단 주인" data-img="https://igx.kr/u/NR/c/p" data-desc="<p><b>경지:</b> 일반인</p><p><b>외형:</b> 갈색머리+갈색눈</p><p><b>성격:</b> 교활함, 속물적</p><p><b>말투:</b> 상냥한 척하며 간 보는 말투</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/p" alt="에밀리"></div>
+                        <h3 class="char-name">에밀리</h3><p class="char-sub">에스테 / 상단 주인</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="아리샤" data-sub="발티아 / 제2황녀" data-img="https://igx.kr/u/NR/c/M" data-desc="<p><b>경지:</b> 6써클</p><p><b>외형:</b> 흑발+흑안</p><p><b>성격:</b> 집착, 싸이코</p><p><b>말투:</b> 어두운 매력을 지님</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/M" alt="아리샤"></div>
+                        <h3 class="char-name">아리샤</h3><p class="char-sub">발티아 / 제2황녀</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">6써클</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="루시아" data-sub="발티아 / 제1황녀" data-img="https://igx.kr/u/NR/c/J" data-desc="<p><b>경지:</b> 7써클 대마법사</p><p><b>외형:</b> 백발+백안</p><p><b>성격:</b> 완벽주의, 무자비</p><p><b>말투:</b> 이성적이고 논리적인 반말</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/J" alt="루시아"></div>
+                        <h3 class="char-name">루시아</h3><p class="char-sub">발티아 / 제1황녀</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">7써클</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="칼리나" data-sub="발티아 / 길드 마스터" data-img="https://igx.kr/u/NR/c/c" data-desc="<p><b>경지:</b> 익스퍼트 최상급</p><p><b>외형:</b> 적발+금안</p><p><b>성격:</b> 다정함, 온화함</p><p><b>말투:</b> 부드러운 하대, 보호자 느낌</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/c" alt="칼리나"></div>
+                        <h3 class="char-name">칼리나</h3><p class="char-sub">발티아 / 길드 마스터</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">익스퍼트 최상급</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="세실리" data-sub="폰티에 / 가주" data-img="https://igx.kr/u/NR/c/r" data-desc="<p><b>경지:</b> 일반인</p><p><b>외형:</b> 금발+자안</p><p><b>성격:</b> 귀여움, 계략적</p><p><b>말투:</b> 앙칼진 말투</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/r" alt="세실리"></div>
+                        <h3 class="char-name">세실리</h3><p class="char-sub">폰티에 / 가주</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="리브레" data-sub="루벨 / 가주" data-img="https://igx.kr/u/NR/c/q" data-desc="<p><b>경지:</b> 일반인</p><p><b>외형:</b> 흑발+금안</p><p><b>성격:</b> 계산적, 냉정함</p><p><b>말투:</b> 감정이 배제된 차가움</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/q" alt="리브레"></div>
+                        <h3 class="char-name">리브레</h3><p class="char-sub">루벨 / 가주</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="이레나" data-sub="블러디로즈 / 가주" data-img="https://igx.kr/u/NR/c/n" data-desc="<p><b>경지:</b> 일반인</p><p><b>외형:</b> 흑발+녹안</p><p><b>성격:</b> 욕망, 교활</p><p><b>말투:</b> 관능적이고 느긋함</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/n" alt="이레나"></div>
+                        <h3 class="char-name">이레나</h3><p class="char-sub">블러디로즈 / 가주</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="페르시" data-sub="펜리델 / 여우수인" data-img="https://igx.kr/u/NR/c/B" data-desc="<p><b>경지:</b> 소드 유저 (도적)</p><p><b>외형:</b> 금발+금안</p><p><b>성격:</b> 소심, 순수</p><p><b>말투:</b> 작고 조심스러운 어투</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/B" alt="페르시"></div>
+                        <h3 class="char-name">페르시</h3><p class="char-sub">펜리델 / 여우수인</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">소드 유저</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="셀리나" data-sub="발티아 / 성녀" data-img="https://igx.kr/u/NR/c/d" data-desc="<p><b>경지:</b> 성녀</p><p><b>외형:</b> 핑크색 머리+금안</p><p><b>성격:</b> 순수, 이타적</p><p><b>말투:</b> 자신의 욕망을 억누르며 부드럽고 순수함</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/d" alt="셀리나"></div>
+                        <h3 class="char-name">셀리나</h3><p class="char-sub">발티아 / 성녀</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">성녀</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="시엘라" data-sub="베르크르트 / 가주" data-img="https://igx.kr/u/NR/c/N" data-desc="<p><b>경지:</b> 8써클</p><p><b>외형:</b> 은발+청안</p><p><b>성격:</b> 교만, 우월</p><p><b>말투:</b> 확신에 찬 위엄 있는 말투</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/N" alt="시엘라"></div>
+                        <h3 class="char-name">시엘라</h3><p class="char-sub">베르크르트 / 가주</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">8써클</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="리리엘" data-sub="진조 뱀파이어 / 모험가" data-img="https://igx.kr/u/NR/c/v" data-desc="<p><b>경지:</b> 8써클</p><p><b>외형:</b> 은발+적안</p><p><b>성격:</b> 교만, 꼬맹이</p><p><b>말투:</b> 고압적이고 새침하며 허세와 귀여움</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/v" alt="리리엘"></div>
+                        <h3 class="char-name">리리엘</h3><p class="char-sub">진조 뱀파이어</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">8써클</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="리뉴아" data-sub="펜리델 / 족장" data-img="https://igx.kr/u/NR/c/y" data-desc="<p><b>경지:</b> 7써클</p><p><b>외형:</b> 흑발+금안 (여우수인)</p><p><b>성격:</b> 정중함, 요염함</p><p><b>말투:</b> 정중하고 품위 있는 요염함</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/y" alt="리뉴아"></div>
+                        <h3 class="char-name">리뉴아</h3><p class="char-sub">펜리델 / 족장</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">7써클</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="마레나" data-sub="발티아 / 정보길드 수장" data-img="https://igx.kr/u/NR/c/C" data-desc="<p><b>경지:</b> 익스퍼트 최상급</p><p><b>외형:</b> 적발+적안</p><p><b>성격:</b> 계산적, 잔혹, 호탕</p><p><b>말투:</b> 욕설 섞인 호탕함 속에 의도를 감춤</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/C" alt="마레나"></div>
+                        <h3 class="char-name">마레나</h3><p class="char-sub">정보길드 수장</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">익스퍼트 최상급</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="시에라" data-sub="발티아 / 황제" data-img="https://igx.kr/u/NR/c/D" data-desc="<p><b>경지:</b> 일반인</p><p><b>외형:</b> 백발+자안</p><p><b>성격:</b> 귀여움, 권위적</p><p><b>말투:</b> 황제다운 위엄과 귀여움이 공존</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/D" alt="시에라"></div>
+                        <h3 class="char-name">시에라</h3><p class="char-sub">발티아 / 황제</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="리제엘" data-sub="마탑 / 수장" data-img="https://igx.kr/u/NR/c/z" data-desc="<p><b>경지:</b> 9써클</p><p><b>외형:</b> 흑발+금안</p><p><b>성격:</b> 우아, 잔혹, 장난기</p><p><b>말투:</b> 거만하고 귀여운 어린아이 말투</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/z" alt="리제엘"></div>
+                        <h3 class="char-name">리제엘</h3><p class="char-sub">마탑 / 수장</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">9써클</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="아리엘" data-sub="발렌티스 / 기사단장" data-img="https://igx.kr/u/NR/c/t" data-desc="<p><b>경지:</b> 마스터 극의 (검제)</p><p><b>외형:</b> 은발+적안</p><p><b>성격:</b> 규범적, 질서선, 여린마음</p><p><b>말투:</b> 격식체, 군령조, 단호함</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/t" alt="아리엘"></div>
+                        <h3 class="char-name">아리엘</h3><p class="char-sub">발렌티스 / 기사단장</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">마스터 극의</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="유리아" data-sub="마경 / 황족 / 제3황녀" data-img="https://igx.kr/u/NR/c/G" data-desc="<p><b>경지:</b> 불명</p><p><b>외형:</b> 하늘색 머리+자안</p><p><b>성격:</b> 질투심, 자존감 낮음</p><p>바알에게 육체의 주도권을 빼앗긴 비운의 황녀.</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/G" alt="유리아"></div>
+                        <h3 class="char-name">유리아</h3><p class="char-sub">마경 / 제3황녀</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">바알 계약</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="피에르" data-sub="아이언앤빌 / 드워프" data-img="https://igx.kr/u/NR/c/w" data-desc="<p><b>경지:</b> 일반인</p><p><b>외형:</b> 갈색머리+적안 (드워프)</p><p><b>성격:</b> 츤데레, 투정, 애정결핍</p><p><b>말투:</b> 거침없고 투덜대는 반말</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/w" alt="피에르"></div>
+                        <h3 class="char-name">피에르</h3><p class="char-sub">아이언앤빌 / 드워프</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="네이리아" data-sub="아틀란티스 / 인어족" data-img="https://igx.kr/u/NR/c/h" data-desc="<p><b>경지:</b> 7써클</p><p><b>외형:</b> 핑크빛머리+청안 (인어족)</p><p><b>성격:</b> 고결함, 경계심</p><p><b>말투:</b> 우아하고 배타적인 어조</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/h" alt="네이리아"></div>
+                        <h3 class="char-name">네이리아</h3><p class="char-sub">아틀란티스 / 인어족</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">7써클</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="이그나" data-sub="타르카스 / 용인" data-img="https://igx.kr/u/NR/c/m" data-desc="<p><b>경지:</b> 마스터 입문</p><p><b>외형:</b> 흑발+금안 (용인)</p><p><b>성격:</b> 오만함, 전투광</p><p><b>말투:</b> 거만하고 포악한 어조</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/m" alt="이그나"></div>
+                        <h3 class="char-name">이그나</h3><p class="char-sub">타르카스 / 용인</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">마스터 입문</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="카르미" data-sub="오블리비온 / 타락자" data-img="https://igx.kr/u/NR/c/l" data-desc="<p><b>경지:</b> 익스퍼트 최상급 (19위 살로스 계약)</p><p><b>외형:</b> 백발+적안</p><p><b>성격:</b> 잔혹, 절대충성</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/l" alt="카르미"></div>
+                        <h3 class="char-name">카르미</h3><p class="char-sub">오블리비온 / 타락자</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">익스퍼트 최상급</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="헬레나" data-sub="오블리비온 / 대언자" data-img="https://igx.kr/u/NR/c/j" data-desc="<p><b>경지:</b> 9써클 (2위 아그너스 계약)</p><p><b>외형:</b> 금발+금안</p><p><b>성격:</b> 허무주의, 광신, 위선적인 자비</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/j" alt="헬레나"></div>
+                        <h3 class="char-name">헬레나</h3><p class="char-sub">오블리비온 / 대언자</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">9써클</span></div>
+                    </div>
+                    <div class="char-card clickable-card fade-up" data-title="클로에" data-sub="오블리비온 / 낙인자" data-img="https://igx.kr/u/NR/c/k" data-desc="<p><b>경지:</b> 마스터 완숙 (11위 기마긴 계약)</p><p><b>외형:</b> 은발+자안</p><p><b>성격:</b> 가학적, 잔혹함, 권력욕</p><p><b>말투:</b> 상대를 조롱하고 깔보는 말투</p>">
+                        <div class="char-portrait"><img src="https://igx.kr/u/NR/c/k" alt="클로에"></div>
+                        <h3 class="char-name">클로에</h3><p class="char-sub">오블리비온 / 낙인자</p>
+                        <div class="char-stats"><span class="stat-badge">여성</span><span class="stat-badge">마스터 완숙</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="locations" class="loc-wrapper fade-up">
+                <h2 class="section-title-light">주요 무대</h2>
+                <div class="card-grid">
+
+                    <div class="loc-card clickable-card fade-up" data-title="임페리움" data-sub="발티아 제국 수도" data-img="https://igx.kr/u/GN/c/w" data-desc="<p>제국의 중심부이자 찬란한 황금빛 도시. 거대한 성벽 뒤에는 황실의 위엄과 귀족들의 암투가 끊이지 않는다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/w" alt="임페리움"></div>
+                        <div class="loc-text-box"><p><strong>임페리움</strong>, 발티아 제국의 심장. 찬란한 황금빛 도시.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="마경 영지" data-sub="72악마의 땅" data-img="https://igx.kr/u/GN/c/j" data-desc="<p>동대륙의 척박한 땅. 마력이 뒤틀려 있으며 밤하늘이 항상 보라빛과 붉은빛으로 물들어 있다. 철저한 약육강식의 법칙이 적용된다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/j" alt="마경 영지"></div>
+                        <div class="loc-text-box"><p><strong>마경 영지</strong>, 보라빛 밤하늘이 드리워진 약육강식의 땅.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="아틀란티스" data-sub="해저 문명" data-img="https://igx.kr/u/GN/c/g" data-desc="<p>서남부 칠흑 같은 바다 깊은 해구 속에 위치한 고대 인어들의 문명. 외부인의 접근을 철저히 막고 있다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/g" alt="아틀란티스"></div>
+                        <div class="loc-text-box"><p><strong>아틀란티스</strong>, 칠흑 같은 바다 밑 인어들의 고대 문명.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="실바네스" data-sub="엘프들의 마을" data-img="https://igx.kr/u/GN/c/l" data-desc="<p>대륙 북쪽에 위치한 엘프들의 거점. 거대한 나무들이 숲을 이루고 있으며 원로회가 다스린다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/l" alt="실바네스"></div>
+                        <div class="loc-text-box"><p><strong>실바네스</strong>, 거대한 나무로 숲을 이룬 엘프들의 거점.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="펜리델" data-sub="여우수인 촌락" data-img="https://igx.kr/u/GN/c/h" data-desc="<p>대륙 남쪽 숲에 위치. 오두막을 짓고 사는 폐쇄적 족장 체제로, 혈통과 실력을 모두 중시한다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/h" alt="펜리델"></div>
+                        <div class="loc-text-box"><p><strong>펜리델</strong>, 울창한 숲 속의 여우수인 촌락.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="아이언앤빌" data-sub="드워프 마을" data-img="https://igx.kr/u/GN/c/d" data-desc="<p>제국 북서쪽 지하 산맥에 위치한 드워프들의 거점. 족장단과 장인회가 권력을 양분한다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/d" alt="아이언앤빌"></div>
+                        <div class="loc-text-box"><p><strong>아이언앤빌</strong>, 지하 산맥에 위치한 거대한 제련의 도시.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="암영지구" data-sub="수도 뒷골목" data-img="https://igx.kr/u/GN/c/c" data-desc="<p>임페리움 동남쪽의 좁고 어두운 골목. 정보 길드의 은밀한 본거지이자 제국의 그림자가 모이는 곳.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/c" alt="암영지구"></div>
+                        <div class="loc-text-box"><p><strong>암영지구</strong>, 제국 수도의 어두운 이면.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="포르투스" data-sub="항구도시" data-img="https://igx.kr/u/GN/c/y" data-desc="<p>서남부에 위치한 최대 무역항. 복잡한 해상 운하를 따라 대륙의 상단들이 쉴 새 없이 오간다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/y" alt="포르투스"></div>
+                        <div class="loc-text-box"><p><strong>포르투스</strong>, 상단과 물자가 모이는 거대한 해양 도시.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="마탑" data-sub="진리의 첨탑" data-img="https://igx.kr/u/GN/c/v" data-desc="<p>황궁과 성당 사이에 우뚝 솟은 검푸른 마석의 11층 첨탑. 수도 대결계와 방위를 책임지는 마법의 요람.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/v" alt="마탑"></div>
+                        <div class="loc-text-box"><p><strong>마탑</strong>, 제국 방위를 책임지는 11층의 거대한 첨탑.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="베르크르트 대공령" data-sub="북부 보수파 영지" data-img="https://igx.kr/u/GN/c/t" data-desc="<p>북부 설원지대의 산악과 눈 덮인 도시. 풍부한 철광과 은광을 바탕으로 막강한 무력을 유지한다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/t" alt="베르크르트 대공령"></div>
+                        <div class="loc-text-box"><p><strong>베르크르트 대공령</strong>, 눈 덮인 철벽의 요새 도시.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="블러드로즈 공작령" data-sub="개혁파 영지" data-img="https://igx.kr/u/GN/c/r" data-desc="<p>서부의 비옥한 평원. 드넓은 농경지와 장미 정원이 펼쳐져 있으며, 약초와 특유의 장미가 유명하다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/r" alt="블러드로즈 공작령"></div>
+                        <div class="loc-text-box"><p><strong>블러드로즈 공작령</strong>, 장미꽃이 만발하는 풍요로운 영지.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="폰티에 백작령" data-sub="예술과 무역의 중심" data-img="https://igx.kr/u/GN/c/q" data-desc="<p>남동부 고원의 개방적 도시. 보석 가공, 음악, 예술이 고도로 발달하여 대륙의 트렌드를 주도한다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/q" alt="폰티에 백작령"></div>
+                        <div class="loc-text-box"><p><strong>폰티에 백작령</strong>, 예술과 아름다움이 흐르는 성벽 도시.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="루벨 후작령" data-sub="밀무역의 온상" data-img="https://igx.kr/u/GN/c/p" data-desc="<p>동부 강가의 늪지와 검은 숲에 둘러싸인 요새도시. 진귀한 독초와 암시장 거래가 성행한다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/p" alt="루벨 후작령"></div>
+                        <div class="loc-text-box"><p><strong>루벨 후작령</strong>, 검은 숲과 독초가 자라는 은밀한 지역.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="에스테 자작령" data-sub="제국의 곡창" data-img="https://igx.kr/u/GN/c/n" data-desc="<p>임페리움 인근 내륙. 완만한 평야에서 대규모 곡물 재배와 최고급 포도주 양조가 이루어진다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/n" alt="에스테 자작령"></div>
+                        <div class="loc-text-box"><p><strong>에스테 자작령</strong>, 제국의 식량을 책임지는 광활한 평야.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="발렌티스 공작령" data-sub="천혜의 요새" data-img="https://igx.kr/u/GN/c/m" data-desc="<p>서북부 험준한 산맥에 위치. 아이언앤빌과 인접해 있으며 광물, 목재, 군사 요충지로서 굳건히 서있다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/m" alt="발렌티스 공작령"></div>
+                        <div class="loc-text-box"><p><strong>발렌티스 공작령</strong>, 험준한 산맥의 절대 뚫리지 않는 요새.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="타르카스" data-sub="용인들의 마을" data-img="https://igx.kr/u/GN/c/B" data-desc="<p>북중부 산맥 정상부 칼데라. 비행 없이 접근이 불가능한 폐쇄적 촌락으로 고대 진룡의 피를 잇는 용인들이 산다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/B" alt="타르카스"></div>
+                        <div class="loc-text-box"><p><strong>타르카스</strong>, 구름 위, 고대 진룡의 둥지였던 장소.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="회색지대" data-sub="무법의 도피처" data-img="https://igx.kr/u/GN/c/z" data-desc="<p>서대륙와 동대륙을 가로지르는 국경. 1차 인마대전의 여파로 생태계가 뒤틀렸으며 범죄자들의 피난처로 전락했다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/z" alt="회색지대"></div>
+                        <div class="loc-text-box"><p><strong>회색지대</strong>, 제국의 법이 닿지 않는 뒤틀린 완충지대.</p></div>
+                    </div>
+                    <div class="loc-card clickable-card fade-up" data-title="모험가 길드 본점" data-sub="임페리움 내부" data-img="https://igx.kr/u/GN/c/k" data-desc="<p>제국 수도에만 유일하게 존재하는 거대 길드. F급부터 S급까지 수많은 모험가들이 임무와 명예를 위해 모여든다.</p>">
+                        <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/k" alt="모험가 길드 본점"></div>
+                        <div class="loc-text-box"><p><strong>모험가 길드 본점</strong>, 대륙의 모든 의뢰가 모이는 거점.</p></div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
+
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuLinks = document.querySelectorAll('.menu-link');
+
+            menuBtn.addEventListener('click', () => {
+                menuBtn.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+            });
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    menuBtn.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                });
+            });
+
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalCloseBtn = document.getElementById('modal-close');
+            const modalImg = document.getElementById('modal-img');
+            const modalTitle = document.getElementById('modal-title');
+            const modalSub = document.getElementById('modal-sub');
+            const modalDesc = document.getElementById('modal-desc');
+            const clickableCards = document.querySelectorAll('.clickable-card');
+
+            clickableCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    modalTitle.innerText = card.getAttribute('data-title');
+                    modalSub.innerText = card.getAttribute('data-sub');
+                    modalImg.src = card.getAttribute('data-img');
+                    modalDesc.innerHTML = card.getAttribute('data-desc');
+                    modalOverlay.classList.add('active');
+                    document.body.classList.add('modal-open');
+                });
+            });
+
+            function closeModal() {
+                modalOverlay.classList.remove('active');
+                document.body.classList.remove('modal-open');
+                setTimeout(() => { modalImg.src = ""; }, 300);
+            }
+
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) closeModal();
+            });
+        });
+    </script>
+</body>
+</html>
