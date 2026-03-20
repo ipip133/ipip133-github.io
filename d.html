@@ -8,7 +8,6 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <style>
         :root {
-            /* 컬러 팔레트 */
             --bg-void: #050404; 
             --gold-light: #e8c47a;
             --gold-dark: #8a6d3b;
@@ -23,15 +22,82 @@
         body {
             background-color: var(--bg-void);
             color: #d4d4d4;
-            /* 모바일에 최적화된 깔끔한 폰트 적용 */
             font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
             overflow-x: hidden;
             scroll-behavior: smooth;
             line-height: 1.6;
         }
 
-        /* 제목들은 여전히 판타지 느낌 유지 */
         h1, h2, h3, h4, .eng-font { font-family: 'Cinzel', 'Noto Serif KR', serif; }
+
+        /* =========================================
+           ✨ 네비게이션 햄버거 메뉴 (모바일 최적화)
+           ========================================= */
+        .menu-btn {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 35px;
+            height: 25px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: var(--gold-light);
+            border-radius: 3px;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 5px rgba(0,0,0,0.8);
+        }
+
+        /* 메뉴 열렸을 때 X 모양 변환 */
+        .menu-btn.active span:nth-child(1) { transform: translateY(11px) rotate(45deg); background-color: #fff; }
+        .menu-btn.active span:nth-child(2) { opacity: 0; }
+        .menu-btn.active span:nth-child(3) { transform: translateY(-11px) rotate(-45deg); background-color: #fff; }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(5, 4, 4, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* 초기 상태: 위로 숨겨짐 */
+            transform: translateY(-100%);
+            transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1.0);
+        }
+
+        .mobile-menu.active {
+            transform: translateY(0);
+        }
+
+        .mobile-menu ul {
+            list-style: none;
+            text-align: center;
+        }
+
+        .mobile-menu li { margin: 25px 0; }
+
+        .mobile-menu a {
+            text-decoration: none;
+            color: var(--gold-light);
+            font-family: 'Cinzel', 'Noto Serif KR', serif;
+            font-size: 2rem;
+            letter-spacing: 5px;
+            transition: color 0.3s ease;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .mobile-menu a:hover { color: #fff; }
 
         /* =========================================
            1. Hero: 다크 판타지의 밤 (황금빛 불티)
@@ -193,10 +259,9 @@
             font-size: 1rem;
             text-align: justify;
             color: #3d3024;
-            word-break: keep-all; /* 모바일에서 단어 끊김 방지 */
+            word-break: keep-all; 
         }
 
-        /* 대륙 지도 공간 */
         .map-ending {
             margin-top: 60px;
             text-align: center;
@@ -249,7 +314,6 @@
             gap: 30px;
         }
 
-        /* 다크 캐릭터 카드 */
         .char-card {
             background: var(--card-bg);
             backdrop-filter: blur(8px);
@@ -268,11 +332,7 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.7);
         }
 
-        .char-name { 
-            font-size: 1.8rem; 
-            color: var(--gold-light); 
-            margin-bottom: 5px; 
-        }
+        .char-name { font-size: 1.8rem; color: var(--gold-light); margin-bottom: 5px; }
         .char-sub { color: #a59382; font-size: 0.9rem; margin-bottom: 15px; font-weight: 500; }
 
         .char-stats { display: flex; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
@@ -291,7 +351,6 @@
             word-break: keep-all;
         }
 
-        /* 다크 장소 카드 */
         .loc-wrapper { margin-top: 100px; }
 
         .loc-card {
@@ -308,21 +367,9 @@
         .loc-demon { background-image: linear-gradient(to bottom, transparent, rgba(5,4,4,0.95)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop'); }
         .loc-atlantis { background-image: linear-gradient(to bottom, transparent, rgba(5,4,4,0.95)), url('https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?q=80&w=800&auto=format&fit=crop'); }
 
-        .loc-card:hover { 
-            transform: scale(1.02); 
-            border-color: var(--gold-light);
-        }
-
-        .loc-info h4 { 
-            font-size: 1.6rem; 
-            color: #ffffff; 
-            margin-bottom: 5px; 
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.8); 
-        }
-        .loc-info p { 
-            color: #d0c5b4; 
-            font-size: 0.9rem; 
-        }
+        .loc-card:hover { transform: scale(1.02); border-color: var(--gold-light); }
+        .loc-info h4 { font-size: 1.6rem; color: #ffffff; margin-bottom: 5px; text-shadow: 1px 1px 5px rgba(0,0,0,0.8); }
+        .loc-info p { color: #d0c5b4; font-size: 0.9rem; }
 
         .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .fade-up.visible { opacity: 1; transform: translateY(0); }
@@ -338,6 +385,20 @@
     </style>
 </head>
 <body>
+
+    <div class="menu-btn" id="menu-btn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <nav class="mobile-menu" id="mobile-menu">
+        <ul>
+            <li><a href="#world" class="menu-link">세계관</a></li>
+            <li><a href="#characters" class="menu-link">주요 인물</a></li>
+            <li><a href="#locations" class="menu-link">주요 무대</a></li>
+        </ul>
+    </nav>
 
     <header id="hero">
         <div class="embers"></div>
@@ -447,6 +508,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // 스크롤 페이드 애니메이션
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) { 
@@ -456,6 +518,25 @@
             }, { threshold: 0.1 });
             
             document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
+
+            // 햄버거 메뉴 토글 로직
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuLinks = document.querySelectorAll('.menu-link');
+
+            // 버튼 클릭 시 메뉴 열기/닫기
+            menuBtn.addEventListener('click', () => {
+                menuBtn.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+            });
+
+            // 메뉴의 링크 클릭 시 자동으로 메뉴창 닫기
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    menuBtn.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                });
+            });
         });
     </script>
 </body>
