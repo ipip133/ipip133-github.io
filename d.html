@@ -51,8 +51,6 @@
 
         /* 2. 메인 컨텐츠 래퍼 */
         #main-content { position: relative; padding: 80px 0 120px 0; z-index: 10; background-image: url('https://igx.kr/u/BQ/c/d'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; }
-        
-        /* 🚨 원래 밝기(0.7)로 복구된 배경 필터 🚨 */
         #main-content::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, var(--bg-void) 0%, rgba(5, 4, 4, 0.85) 15%, rgba(0, 0, 0, 0.7) 100%); z-index: -1; }
 
         /* 3. 세계관 (양피지) */
@@ -64,25 +62,22 @@
         .world-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
         .world-item h3 { font-size: 1.3rem; color: var(--text-crimson); margin-bottom: 10px; border-bottom: 1px solid rgba(138, 109, 59, 0.3); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         .world-item p { font-size: 1rem; text-align: justify; color: #3d3024; word-break: keep-all; }
-        
-        /* 대륙 지도 영역 */
         .map-ending { margin-top: 60px; text-align: center; border-top: 1px dashed rgba(138, 109, 59, 0.4); padding-top: 30px; }
         .map-ending h3 { font-family: 'Cinzel', serif; color: var(--gold-dark); margin-bottom: 15px; letter-spacing: 4px; font-size: 1.1rem; }
         .map-ending-img { width: 100%; max-width: 800px; background: rgba(138, 109, 59, 0.1); border: 1px solid rgba(138, 109, 59, 0.4); margin: 0 auto; display: block; overflow: hidden; border-radius: 4px; }
         .map-ending-img img { width: 100%; height: auto; display: block; filter: sepia(0.2) contrast(1.1); transition: transform 0.3s; }
         .map-ending-img img:hover { transform: scale(1.02); }
 
-        /* 4. 캐릭터 & 장소 (다크 테마) */
-        .dark-section { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        /* 4. 캐릭터 & 장소 (다크 테마) - 모바일에서도 보이도록 z-index와 position 추가 */
+        .dark-section { position: relative; z-index: 5; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         .section-title-light { text-align: center; font-size: 2.5rem; color: var(--gold-light); margin-bottom: 50px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(232, 196, 122, 0.3); }
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
 
-        /* 공통 클릭 이펙트 */
         .clickable-card { cursor: pointer; position: relative; }
         .clickable-card::after { content: '🔍 클릭하여 보기'; position: absolute; bottom: 20px; right: 20px; font-size: 0.8rem; color: var(--gold-light); opacity: 0; transition: all 0.3s ease; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 15px; z-index: 10; }
         .clickable-card:hover::after { opacity: 1; bottom: 30px; }
 
-        /* --- [캐릭터 카드] --- */
+        /* 캐릭터 카드 */
         .char-card { background: var(--card-bg); backdrop-filter: blur(8px); border: 1px solid rgba(138, 109, 59, 0.3); border-top: 3px solid var(--text-crimson); border-radius: 8px; padding: 25px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; text-align: center; }
         .char-card:hover { transform: translateY(-5px); border-color: var(--gold-light); box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
         .char-portrait { width: 100%; height: 280px; border-radius: 8px; border: 2px solid var(--gold-dark); margin-bottom: 15px; overflow: hidden; background: #111; box-shadow: 0 0 15px rgba(0,0,0,0.8); }
@@ -95,7 +90,7 @@
         .stat-badge { border: 1px solid rgba(232, 196, 122, 0.4); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; color: #e0e0e0; background: rgba(0,0,0,0.5); }
         .char-desc { color: #ccc; margin-top: 15px; border-left: 2px solid var(--gold-dark); padding-left: 12px; font-style: italic; font-size: 0.85rem; line-height: 1.5; word-break: keep-all; }
 
-        /* --- [장소 카드 리뉴얼] --- */
+        /* 장소 카드 */
         .loc-wrapper { margin-top: 100px; }
         .loc-card { background: var(--card-bg); backdrop-filter: blur(8px); border: 1px solid rgba(138, 109, 59, 0.3); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .loc-card:hover { transform: translateY(-5px); border-color: var(--gold-light); box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
@@ -129,11 +124,16 @@
         .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .fade-up.visible { opacity: 1; transform: translateY(0); }
 
+        /* 🔥 모바일 최적화 및 버그 수정 🔥 */
         @media (max-width: 768px) {
             .astra-title { font-size: 4.5rem; letter-spacing: 10px; }
             .parchment { padding: 40px 20px; margin: 0 15px 80px 15px; }
             .world-grid { grid-template-columns: 1fr; gap: 30px; }
             .modal-img-container { height: 350px; }
+            
+            /* 모바일에서 카드가 안 보이는 현상 해결을 위해 1열 강제 및 배경 고정 해제 */
+            #main-content { background-attachment: scroll; } 
+            .card-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -194,7 +194,7 @@
                 <div class="map-ending fade-up">
                     <h3>MAP OF ASTRA</h3>
                     <div class="map-ending-img">
-                        <img src="https://igx.kr/u/CQ/c/h" alt="아스트라 대륙 지도">
+                        <img src="https://igx.kr/u/CQ/c/c" alt="아스트라 대륙 지도">
                     </div>
                 </div>
             </section>
@@ -205,12 +205,12 @@
             <section id="characters" class="fade-up">
                 <h2 class="section-title-light">주요 인물</h2>
                 <div class="card-grid">
-                    <div class="char-card clickable-card fade-up" data-title="릴리" data-sub="천신교 / 천신" data-img="https://igx.kr/u/NR/c/H" data-desc="<p><b>경지:</b> 신격 (Deity)</p><p><b>성격:</b> 나태한, 게으른, 성급한</p><p>아스트라 대륙을 굽어보는 빛과 질서의 화신이자 천신교의 절대적인 숭배 대상.</p>">
+                    <div class="char-card clickable-card fade-up" data-title="릴리" data-sub="천신교 / 천신" data-img="https://igx.kr/u/NR/c/H" data-desc="<p><b>경지:</b> 신격 (Deity)</p><p><b>성격:</b> 불명</p><p>아스트라 대륙을 굽어보는 빛과 질서의 화신이자 천신교의 절대적인 숭배 대상.</p>">
                         <div class="char-portrait"><img src="https://igx.kr/u/NR/c/H" alt="릴리"></div>
                         <h3 class="char-name">릴리</h3><p class="char-sub">천신교 / 천신</p>
                         <div class="char-stats"><span class="stat-badge">초월자</span></div>
                     </div>
-                    <div class="char-card clickable-card fade-up" data-title="바알" data-sub="마경 / 제1위 대악마" data-img="https://igx.kr/u/NR/c/g" data-desc="<p><b>경지:</b> 악신</p><p><b>성격:</b> 오만함, 유희적, 교활한</p><p>솔로몬의 72악마 중 정점. 제3황녀 유리아와 계약하여 육체를 지배하고 있다.</p>">
+                    <div class="char-card clickable-card fade-up" data-title="바알" data-sub="마경 / 제1위 대악마" data-img="https://igx.kr/u/NR/c/g" data-desc="<p><b>경지:</b> 악신</p><p><b>성격:</b> 오만함, 파괴적</p><p>솔로몬의 72악마 중 정점. 제3황녀 유리아와 계약하여 육체를 지배하고 있다.</p>">
                         <div class="char-portrait"><img src="https://igx.kr/u/NR/c/g" alt="바알"></div>
                         <h3 class="char-name">바알</h3><p class="char-sub">마경 / 제1위 대악마</p>
                         <div class="char-stats"><span class="stat-badge">악신</span></div>
@@ -349,75 +349,75 @@
 
                     <div class="loc-card clickable-card fade-up" data-title="임페리움" data-sub="발티아 제국 수도" data-img="https://igx.kr/u/GN/c/w" data-desc="<p>제국의 중심부이자 찬란한 황금빛 도시. 거대한 성벽 뒤에는 황실의 위엄과 귀족들의 암투가 끊이지 않는다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/w" alt="임페리움"></div>
-                        <div class="loc-text-box"><p>발티아 제국의 심장. 찬란한 황금빛 도시.</p></div>
+                        <div class="loc-text-box"><p><strong>임페리움</strong>, 발티아 제국의 심장. 찬란한 황금빛 도시.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="마경 영지" data-sub="72악마의 땅" data-img="https://igx.kr/u/GN/c/j" data-desc="<p>동대륙의 척박한 땅. 마력이 뒤틀려 있으며 밤하늘이 항상 보라빛과 붉은빛으로 물들어 있다. 철저한 약육강식의 법칙이 적용된다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/j" alt="마경 영지"></div>
-                        <div class="loc-text-box"><p>보라빛 밤하늘이 드리워진 약육강식의 땅.</p></div>
+                        <div class="loc-text-box"><p><strong>마경 영지</strong>, 보라빛 밤하늘이 드리워진 약육강식의 땅.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="아틀란티스" data-sub="해저 문명" data-img="https://igx.kr/u/GN/c/g" data-desc="<p>서남부 칠흑 같은 바다 깊은 해구 속에 위치한 고대 인어들의 문명. 외부인의 접근을 철저히 막고 있다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/g" alt="아틀란티스"></div>
-                        <div class="loc-text-box"><p>칠흑 같은 바다 밑 인어들의 고대 문명.</p></div>
+                        <div class="loc-text-box"><p><strong>아틀란티스</strong>, 칠흑 같은 바다 밑 인어들의 고대 문명.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="실바네스" data-sub="엘프들의 마을" data-img="https://igx.kr/u/GN/c/l" data-desc="<p>대륙 북쪽에 위치한 엘프들의 거점. 거대한 나무들이 숲을 이루고 있으며 원로회가 다스린다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/l" alt="실바네스"></div>
-                        <div class="loc-text-box"><p>거대한 나무로 숲을 이룬 엘프들의 거점.</p></div>
+                        <div class="loc-text-box"><p><strong>실바네스</strong>, 거대한 나무로 숲을 이룬 엘프들의 거점.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="펜리델" data-sub="여우수인 촌락" data-img="https://igx.kr/u/GN/c/h" data-desc="<p>대륙 남쪽 숲에 위치. 오두막을 짓고 사는 폐쇄적 족장 체제로, 혈통과 실력을 모두 중시한다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/h" alt="펜리델"></div>
-                        <div class="loc-text-box"><p>울창한 숲 속의 여우수인 촌락.</p></div>
+                        <div class="loc-text-box"><p><strong>펜리델</strong>, 울창한 숲 속의 여우수인 촌락.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="아이언앤빌" data-sub="드워프 마을" data-img="https://igx.kr/u/GN/c/d" data-desc="<p>제국 북서쪽 지하 산맥에 위치한 드워프들의 거점. 족장단과 장인회가 권력을 양분한다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/d" alt="아이언앤빌"></div>
-                        <div class="loc-text-box"><p>지하 산맥에 위치한 거대한 제련의 도시.</p></div>
+                        <div class="loc-text-box"><p><strong>아이언앤빌</strong>, 지하 산맥에 위치한 거대한 제련의 도시.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="암영지구" data-sub="수도 뒷골목" data-img="https://igx.kr/u/GN/c/c" data-desc="<p>임페리움 동남쪽의 좁고 어두운 골목. 정보 길드의 은밀한 본거지이자 제국의 그림자가 모이는 곳.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/c" alt="암영지구"></div>
-                        <div class="loc-text-box"><p>제국 수도의 어두운 이면.</p></div>
+                        <div class="loc-text-box"><p><strong>암영지구</strong>, 제국 수도의 어두운 이면.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="포르투스" data-sub="항구도시" data-img="https://igx.kr/u/GN/c/y" data-desc="<p>서남부에 위치한 최대 무역항. 복잡한 해상 운하를 따라 대륙의 상단들이 쉴 새 없이 오간다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/y" alt="포르투스"></div>
-                        <div class="loc-text-box"><p>상단과 물자가 모이는 거대한 해양 도시.</p></div>
+                        <div class="loc-text-box"><p><strong>포르투스</strong>, 상단과 물자가 모이는 거대한 해양 도시.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="마탑" data-sub="진리의 첨탑" data-img="https://igx.kr/u/GN/c/v" data-desc="<p>황궁과 성당 사이에 우뚝 솟은 검푸른 마석의 11층 첨탑. 수도 대결계와 방위를 책임지는 마법의 요람.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/v" alt="마탑"></div>
-                        <div class="loc-text-box"><p>제국 방위를 책임지는 11층의 거대한 첨탑.</p></div>
+                        <div class="loc-text-box"><p><strong>마탑</strong>, 제국 방위를 책임지는 11층의 거대한 첨탑.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="베르크르트 대공령" data-sub="북부 보수파 영지" data-img="https://igx.kr/u/GN/c/t" data-desc="<p>북부 설원지대의 산악과 눈 덮인 도시. 풍부한 철광과 은광을 바탕으로 막강한 무력을 유지한다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/t" alt="베르크르트 대공령"></div>
-                        <div class="loc-text-box"><p>눈 덮인 철벽의 요새 도시.</p></div>
+                        <div class="loc-text-box"><p><strong>베르크르트 대공령</strong>, 눈 덮인 철벽의 요새 도시.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="블러드로즈 공작령" data-sub="개혁파 영지" data-img="https://igx.kr/u/GN/c/r" data-desc="<p>서부의 비옥한 평원. 드넓은 농경지와 장미 정원이 펼쳐져 있으며, 약초와 특유의 장미가 유명하다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/r" alt="블러드로즈 공작령"></div>
-                        <div class="loc-text-box"><p>장미꽃이 만발하는 풍요로운 영지.</p></div>
+                        <div class="loc-text-box"><p><strong>블러드로즈 공작령</strong>, 장미꽃이 만발하는 풍요로운 영지.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="폰티에 백작령" data-sub="예술과 무역의 중심" data-img="https://igx.kr/u/GN/c/q" data-desc="<p>남동부 고원의 개방적 도시. 보석 가공, 음악, 예술이 고도로 발달하여 대륙의 트렌드를 주도한다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/q" alt="폰티에 백작령"></div>
-                        <div class="loc-text-box"><p>예술과 아름다움이 흐르는 성벽 도시.</p></div>
+                        <div class="loc-text-box"><p><strong>폰티에 백작령</strong>, 예술과 아름다움이 흐르는 성벽 도시.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="루벨 후작령" data-sub="밀무역의 온상" data-img="https://igx.kr/u/GN/c/p" data-desc="<p>동부 강가의 늪지와 검은 숲에 둘러싸인 요새도시. 진귀한 독초와 암시장 거래가 성행한다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/p" alt="루벨 후작령"></div>
-                        <div class="loc-text-box"><p>검은 숲과 독초가 자라는 은밀한 지역.</p></div>
+                        <div class="loc-text-box"><p><strong>루벨 후작령</strong>, 검은 숲과 독초가 자라는 은밀한 지역.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="에스테 자작령" data-sub="제국의 곡창" data-img="https://igx.kr/u/GN/c/n" data-desc="<p>임페리움 인근 내륙. 완만한 평야에서 대규모 곡물 재배와 최고급 포도주 양조가 이루어진다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/n" alt="에스테 자작령"></div>
-                        <div class="loc-text-box"><p>제국의 식량을 책임지는 광활한 평야.</p></div>
+                        <div class="loc-text-box"><p><strong>에스테 자작령</strong>, 제국의 식량을 책임지는 광활한 평야.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="발렌티스 공작령" data-sub="천혜의 요새" data-img="https://igx.kr/u/GN/c/m" data-desc="<p>서북부 험준한 산맥에 위치. 아이언앤빌과 인접해 있으며 광물, 목재, 군사 요충지로서 굳건히 서있다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/m" alt="발렌티스 공작령"></div>
-                        <div class="loc-text-box"><p>험준한 산맥의 절대 뚫리지 않는 요새.</p></div>
+                        <div class="loc-text-box"><p><strong>발렌티스 공작령</strong>, 험준한 산맥의 절대 뚫리지 않는 요새.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="타르카스" data-sub="용인들의 마을" data-img="https://igx.kr/u/GN/c/B" data-desc="<p>북중부 산맥 정상부 칼데라. 비행 없이 접근이 불가능한 폐쇄적 촌락으로 고대 진룡의 피를 잇는 용인들이 산다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/B" alt="타르카스"></div>
-                        <div class="loc-text-box"><p>구름 위, 고대 진룡의 둥지였던 장소.</p></div>
+                        <div class="loc-text-box"><p><strong>타르카스</strong>, 구름 위, 고대 진룡의 둥지였던 장소.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="회색지대" data-sub="무법의 도피처" data-img="https://igx.kr/u/GN/c/z" data-desc="<p>서대륙와 동대륙을 가로지르는 국경. 1차 인마대전의 여파로 생태계가 뒤틀렸으며 범죄자들의 피난처로 전락했다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/z" alt="회색지대"></div>
-                        <div class="loc-text-box"><p>제국의 법이 닿지 않는 뒤틀린 완충지대.</p></div>
+                        <div class="loc-text-box"><p><strong>회색지대</strong>, 제국의 법이 닿지 않는 뒤틀린 완충지대.</p></div>
                     </div>
                     <div class="loc-card clickable-card fade-up" data-title="모험가 길드 본점" data-sub="임페리움 내부" data-img="https://igx.kr/u/GN/c/k" data-desc="<p>제국 수도에만 유일하게 존재하는 거대 길드. F급부터 S급까지 수많은 모험가들이 임무와 명예를 위해 모여든다.</p>">
                         <div class="loc-img-box"><img src="https://igx.kr/u/GN/c/k" alt="모험가 길드 본점"></div>
-                        <div class="loc-text-box"><p>대륙의 모든 의뢰가 모이는 거점.</p></div>
+                        <div class="loc-text-box"><p><strong>모험가 길드 본점</strong>, 대륙의 모든 의뢰가 모이는 거점.</p></div>
                     </div>
 
                 </div>
